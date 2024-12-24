@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use lib "modules";
+
+use AuthFile qw(create_auth_file);
+use YamlConfig qw(create_yaml_config generate_mount_command);
+use YamlEditor qw(edit_yaml_config);
+
+sub main_menu {
+
+    my $menu = << 'EOF';
+1. Creating a new YAML file;
+2. Edit an existing YAML file;
+3. Creating a file to mount using a YAML file;
+4. Creating a file with credentials;
+5. Exit.
+EOF
+    print $menu;
+    print "Choose an action (1/2/3/4/5): ";
+    my $choice = <STDIN>;
+    chomp $choice;
+
+    if ($choice == 1) {
+        create_yaml_config();
+    }
+    elsif ($choice == 2) {
+        edit_yaml_config();
+    }
+    elsif ($choice == 3) {
+        generate_mount_command();
+    }
+    elsif ($choice == 4) {
+        create_auth_file();
+    }
+    elsif ($choice == 5) {
+        print "Exiting the program...\n";
+        exit 0;
+    } else {
+        print "Wrong choice! Please select an action from the list..\n";
+    }
+}
+
+if (@ARGV == 0) {
+    main_menu();
+}
+
+my $arg = shift @ARGV;
+my $yaml_file = shift @ARGV;
+if ($arg && $arg eq '-a') {
+    generate_mount_command($yaml_file);
+} elsif ($arg && $arg eq '-p') {
+    create_auth_file($yaml_file);
+}
