@@ -12,6 +12,16 @@ OR
 sudo afs-cf
 ```
 
+Usage examples:
+
+```
+sudo afs-cf
+OR
+sudo afs-cf -a -p --file /path_to_yaml_file
+# The -a and -p options are responsible for configuring the file for mounting network 
+# resources and the file with credentials for connection.
+```
+
 ## Tools and libraries
 
 * Perl
@@ -30,6 +40,8 @@ mount:
   autofs_mount_options:
     - timeout=360
     - browse
+  autofs_mount_passwd: password
+  autofs_mount_username: username
   credentials_file: /etc/autofs/secret_file
   fstype: cifs
   name: share
@@ -50,6 +62,8 @@ mount:
 **autofs_mount_master_config** is used to indicate where auto.master is located.
 
 **autofs_mount_options** is used to specify the options to be added to auto.master.
+
+**autofs_mount_passwd** and **autofs_mount_username** are optional parameters that store the password and username to automatically create a credential file.
 
 **credentials_file points** to the file where the credentials are stored.
 

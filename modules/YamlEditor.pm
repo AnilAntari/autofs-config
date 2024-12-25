@@ -58,6 +58,30 @@ sub edit_yaml_config {
         $data->{mount}->{options} = [split(',', $new_options_input)];
     }
 
+    if (exists $data->{mount}->{autofs_mount_username}) {
+        print "Current username: $data->{mount}->{autofs_mount_username}\n";
+        print "Do you want to change it? (y/n): ";
+        my $change_username = <STDIN>;
+        chomp $change_username;
+        if ($change_username eq 'y') {
+            print "Enter the new username: ";
+            $data->{mount}->{autofs_mount_username} = <STDIN>;
+            chomp $data->{mount}->{autofs_mount_username};
+        }
+    }
+
+    if (exists $data->{mount}->{autofs_mount_passwd}) {
+        print "Current password is set.\n";
+        print "Do you want to change it? (y/n): ";
+        my $change_password = <STDIN>;
+        chomp $change_password;
+        if ($change_password eq 'y') {
+            print "Enter the new password: ";
+            $data->{mount}->{autofs_mount_passwd} = <STDIN>;
+            chomp $data->{mount}->{autofs_mount_passwd};
+        }
+    }
+
     my $counter = 1;
     foreach my $path (@{$data->{mount}->{network_paths}}) {
         print "Network path $counter:\n";

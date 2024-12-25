@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 use lib "modules";
+use Getopt::Long;
 
 use AuthFile qw(create_auth_file);
 use YamlConfig qw(create_yaml_config generate_mount_command);
 use YamlEditor qw(edit_yaml_config);
 
 sub main_menu {
-
     my $menu = << 'EOF';
 1. Creating a new YAML file;
 2. Edit an existing YAML file;
@@ -42,14 +42,32 @@ EOF
     }
 }
 
-if (@ARGV == 0) {
+my $yaml_file;
+my $mount_flag = 0;
+my $auth_flag = 0;
+
+GetOptions(
+    'a' => \$mount_flag,
+    'p' => \$auth_flag,         
+    'file=s' => \$yaml_file,    
+) or die "Invalid options passed to $0\n";
+
+
+if (@ARGV == 0 && !$mount_flag && !$auth_flag) {
     main_menu();
+    exit 0;
 }
 
-my $arg = shift @ARGV;
-my $yaml_file = shift @ARGV;
-if ($arg && $arg eq '-a') {
+if (!$yaml_file) {
+    print "Error: You must specify a YAML file with -f or --file.\n";
+    exit 1;
+}
+
+# Обработка флагов
+if ($mount_flag) {
     generate_mount_command($yaml_file);
-} elsif ($arg && $arg eq '-p') {
+}
+
+if ($auth_flag) {
     create_auth_file($yaml_file);
 }

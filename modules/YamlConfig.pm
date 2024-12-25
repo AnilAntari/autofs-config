@@ -23,6 +23,14 @@ sub create_yaml_config {
     my $credentials_file = <STDIN>;
     chomp $credentials_file;
 
+    print "Enter the username to add the credentials to the file (or leave an empty line): ";
+    my $credentials_file_username = <STDIN>;
+    chomp $credentials_file_username;
+
+    print "Enter the password to add the credentials to the file (or leave an empty line): ";
+    my $credentials_file_passwd = <STDIN>;
+    chomp $credentials_file_passwd;
+
     print "Enter the settings (separated by commas, example: soft,noperm): ";
     my $options_input = <STDIN>;
     chomp $options_input;
@@ -79,17 +87,20 @@ sub create_yaml_config {
 
     my %config = (
         mount => {
-            name                => $mount_name,
-            fstype              => $fstype,
-            credentials_file    => $credentials_file,
-            options             => \@options,
-            network_paths       => \@network_paths,
-            autofs_mount_options => \@autofs_options,
-            autofs_mount_master_config => $autofs_master_config,
-            autofs_mount_directory => $autofs_mount_directory,
-            autofs_mount_config => $autofs_mount_config,
+            name                        => $mount_name,
+            fstype                      => $fstype,
+            credentials_file            => $credentials_file,
+            options                     => \@options,
+            network_paths               => \@network_paths,
+            autofs_mount_options        => \@autofs_options,
+            autofs_mount_master_config  => $autofs_master_config,
+            autofs_mount_directory      => $autofs_mount_directory,
+            autofs_mount_config         => $autofs_mount_config,
         }
     );
+
+    $config{mount}{autofs_mount_username} = $credentials_file_username if $credentials_file_username;
+    $config{mount}{autofs_mount_passwd} = $credentials_file_passwd if $credentials_file_passwd;
 
     print "Saving the configuration in $yaml_filename...\n";
     open my $fh, '>', "$yaml_directory/$yaml_filename.yaml" or die "The $yaml_filename\.yaml file could not be opened: $!\n";
@@ -152,7 +163,6 @@ sub generate_mount_command {
     close $am_fh;
 
     print "The configuration from the YAML file was applied.\n";
-
 }
 
 1;
