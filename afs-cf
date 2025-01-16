@@ -3,53 +3,45 @@
 use strict;
 use warnings;
 use lib "modules";
+use Getopt::Long;
 
 use AuthFile qw(create_auth_file);
 use YamlConfig qw(create_yaml_config generate_mount_command);
-use YamlEditor qw(edit_yaml_config);
 
-sub main_menu {
+my $yaml_file;
+my $mount_flag = 0;
+my $auth_flag = 0;
+my $create_flag = 0;
+my $help_flag = 0;
 
-    my $menu = << 'EOF';
-1. Creating a new YAML file;
-2. Edit an existing YAML file;
-3. Creating a file to mount using a YAML file;
-4. Creating a file with credentials;
-5. Exit.
-EOF
-    print $menu;
-    print "Choose an action (1/2/3/4/5): ";
-    my $choice = <STDIN>;
-    chomp $choice;
+GetOptions(
+    'a' => \$mount_flag,
+    'p' => \$auth_flag,
+    'c' => \$create_flag,         
+    'file=s' => \$yaml_file,
+    'help' => \$help_flag,    
+) or die "Invalid options passed to $0\n";
 
-    if ($choice == 1) {
-        create_yaml_config();
-    }
-    elsif ($choice == 2) {
-        edit_yaml_config();
-    }
-    elsif ($choice == 3) {
-        generate_mount_command();
-    }
-    elsif ($choice == 4) {
-        create_auth_file();
-    }
-    elsif ($choice == 5) {
-        print "Exiting the program...\n";
-        exit 0;
-    } else {
-        print "Wrong choice! Please select an action from the list..\n";
-    }
-}
-
-if (@ARGV == 0) {
-    main_menu();
-}
-
-my $arg = shift @ARGV;
-my $yaml_file = shift @ARGV;
-if ($arg && $arg eq '-a') {
+if ($mount_flag) {
     generate_mount_command($yaml_file);
-} elsif ($arg && $arg eq '-p') {
+}
+
+if ($auth_flag) {
     create_auth_file($yaml_file);
+}
+
+if ($create_flag) {
+    create_yaml_config();
+}
+
+if ($help_flag) {
+    my $help = <<END_MESSAGE;
+    -a  Create configuration files for the connection.
+    -p  Create a file with credentials for connecting to a network resource (for SMB).
+    -c  Create a YAML configuration file.
+    -f|--file=<filename>  Specify the YAML file to use.
+    -h|--help  Display this help message.
+END_MESSAGE
+    print($help);
+    exit 0;
 }
